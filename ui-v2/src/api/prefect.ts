@@ -9216,6 +9216,11 @@ export interface components {
              * @description The amount of time to wait before running the deployment. Defaults to running the deployment immediately.
              */
             schedule_after?: number;
+            /**
+             * Idempotency Key
+             * @description An optional idempotency key for the flow run. Supports Jinja templates rendered with the same context as parameters (event, automation, labels). When set, overrides the default per-invocation key. Use this to deduplicate flow runs by event data.
+             */
+            idempotency_key?: string | null;
         };
         /**
          * RunnerServerSettings
@@ -11882,63 +11887,6 @@ export interface components {
             [key: string]: unknown;
         };
         /**
-         * WorkPool
-         * @description An ORM representation of a work pool
-         */
-        WorkPool: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** Created */
-            created: string | null;
-            /** Updated */
-            updated: string | null;
-            /**
-             * Name
-             * @description The name of the work pool.
-             */
-            name: string;
-            /**
-             * Description
-             * @description A description of the work pool.
-             */
-            description?: string | null;
-            /**
-             * Type
-             * @description The work pool type.
-             */
-            type: string;
-            /**
-             * Base Job Template
-             * @description The work pool's base job template.
-             */
-            base_job_template?: {
-                [key: string]: unknown;
-            };
-            /**
-             * Is Paused
-             * @description Pausing the work pool stops the delivery of all work.
-             * @default false
-             */
-            is_paused: boolean;
-            /**
-             * Concurrency Limit
-             * @description A concurrency limit for the work pool.
-             */
-            concurrency_limit?: number | null;
-            /** @description The current status of the work pool. */
-            status?: components["schemas"]["WorkPoolStatus"] | null;
-            /**
-             * Default Queue Id
-             * @description The id of the pool's default queue.
-             */
-            default_queue_id?: string | null;
-            /** @description The storage configuration for the work pool. */
-            storage_configuration?: components["schemas"]["WorkPoolStorageConfiguration"];
-        };
-        /**
          * WorkPoolConcurrencyStatus
          * @description Paginated pool-level concurrency status with per-queue breakdown.
          */
@@ -12061,6 +12009,65 @@ export interface components {
              * @description A list of work pool types to include
              */
             any_?: string[] | null;
+        };
+        /** WorkPoolResponse */
+        WorkPoolResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Created */
+            created: string | null;
+            /** Updated */
+            updated: string | null;
+            /**
+             * Name
+             * @description The name of the work pool.
+             */
+            name: string;
+            /**
+             * Description
+             * @description A description of the work pool.
+             */
+            description?: string | null;
+            /**
+             * Type
+             * @description The work pool type.
+             */
+            type: string;
+            /**
+             * Base Job Template
+             * @description The work pool's base job template.
+             */
+            base_job_template?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Is Paused
+             * @description Pausing the work pool stops the delivery of all work.
+             * @default false
+             */
+            is_paused: boolean;
+            /**
+             * Concurrency Limit
+             * @description A concurrency limit for the work pool.
+             */
+            concurrency_limit?: number | null;
+            /** @description The current status of the work pool. */
+            status?: components["schemas"]["WorkPoolStatus"] | null;
+            /**
+             * Default Queue Id
+             * @description The id of the pool's default queue.
+             */
+            default_queue_id?: string | null;
+            /** @description The storage configuration for the work pool. */
+            storage_configuration?: components["schemas"]["WorkPoolStorageConfiguration"];
+            /**
+             * Active Slots
+             * @description The number of concurrency slots occupied by pending or running flow runs. None when concurrency_limit is not set.
+             */
+            active_slots?: number | null;
         };
         /**
          * WorkPoolStatus
@@ -12390,6 +12397,11 @@ export interface components {
             work_pool_name?: string | null;
             /** @description The queue status. */
             status?: components["schemas"]["WorkQueueStatus"] | null;
+            /**
+             * Active Slots
+             * @description The number of concurrency slots currently in use. None when concurrency_limit is not set.
+             */
+            active_slots?: number | null;
         };
         /**
          * WorkQueueStatus
@@ -16306,7 +16318,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["WorkPool"];
+                    "application/json": components["schemas"]["WorkPoolResponse"];
                 };
             };
             /** @description Validation Error */
@@ -16340,7 +16352,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["WorkPool"];
+                    "application/json": components["schemas"]["WorkPoolResponse"];
                 };
             };
             /** @description Validation Error */
@@ -16443,7 +16455,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["WorkPool"][];
+                    "application/json": components["schemas"]["WorkPoolResponse"][];
                 };
             };
             /** @description Validation Error */
